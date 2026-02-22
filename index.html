@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI TOML Editor - Online TOML Parser, Validator & Converter</title>
+<meta name="description" content="Free online TOML editor with syntax validation, TOML to JSON conversion, JSON to TOML conversion, and interactive tree preview.">
+<meta name="keywords" content="TOML editor, TOML parser, TOML validator, TOML to JSON, JSON to TOML, online TOML tool">
+<meta name="author" content="AI TOML Editor">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="AI TOML Editor - Online TOML Parser & Converter">
+<meta property="og:description" content="Free online TOML editor with syntax validation, bidirectional TOML/JSON conversion, and tree preview.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lifa-su.github.io/ai-toml-editor/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AI TOML Editor">
+<meta name="twitter:description" content="Free online TOML editor with validation, conversion, and tree preview.">
+<link rel="canonical" href="https://lifa-su.github.io/ai-toml-editor/">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1a2e;--sf:#16213e;--sf2:#0f3460;--ac:#e94560;--tx:#eee;--tx2:#aab;--bd:#2a2a4a;--ok:#4ecca3;--er:#e94560;--wn:#f0a500;--r:10px;--mono:'SF Mono','Fira Code',Consolas,monospace}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column}
+header{background:linear-gradient(135deg,var(--sf),var(--sf2));padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:10px}
+header h1{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--ac),#533483);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb{display:flex;gap:8px;flex-wrap:wrap}
+.tb button{background:var(--sf2);color:var(--tx);border:1px solid var(--bd);padding:8px 16px;border-radius:var(--r);cursor:pointer;font-size:.85rem;font-weight:500;transition:all .2s}
+.tb button:hover{background:var(--ac);border-color:var(--ac);transform:translateY(-1px)}
+main{flex:1;display:flex;overflow:hidden}
+.pn{flex:1;display:flex;flex-direction:column;min-width:0}
+.ph{background:var(--sf);padding:10px 16px;font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--tx2);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between}
+.badge{background:var(--ac);color:#fff;padding:2px 8px;border-radius:12px;font-size:.7rem}
+.dv{width:4px;background:var(--bd);cursor:col-resize;flex-shrink:0}
+.dv:hover{background:var(--ac)}
+textarea{flex:1;background:var(--bg);color:var(--tx);border:none;padding:16px;font-family:var(--mono);font-size:14px;line-height:1.6;resize:none;outline:none;tab-size:2}
+textarea::placeholder{color:var(--tx2);opacity:.5}
+#tree{overflow:auto;flex:1;padding:16px;background:var(--bg);font-family:var(--mono);font-size:13px;display:none}
+#outwrap{flex:1;display:flex;flex-direction:column}
+.tk{color:#7ec8e3}.ts{color:#4ecca3}.tn{color:#f0a500}.tb2{color:#e94560}.tbr{color:#888}
+.tt{cursor:pointer;user-select:none}.tt:hover .ta{color:var(--ac)}
+.ta{display:inline-block;transition:transform .15s;font-size:10px;width:14px;color:var(--tx2)}
+.ta.c{transform:rotate(-90deg)}
+.tc{margin-left:20px;border-left:1px solid var(--bd);padding-left:8px}
+.tc.h{display:none}
+.sb{background:var(--sf);padding:8px 16px;font-size:.78rem;color:var(--tx2);border-top:1px solid var(--bd);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.sd{width:8px;height:8px;border-radius:50%;display:inline-block}
+.sd.ok{background:var(--ok)}.sd.er{background:var(--er)}.sd.id{background:var(--tx2)}
+.toast{position:fixed;top:20px;right:20px;background:var(--sf2);color:var(--tx);padding:12px 20px;border-radius:var(--r);border:1px solid var(--bd);font-size:.85rem;z-index:999;opacity:0;transform:translateY(-10px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}.toast.error{border-color:var(--er)}.toast.success{border-color:var(--ok)}
+@media(max-width:768px){main{flex-direction:column}.dv{width:100%;height:4px;cursor:row-resize}header h1{font-size:1.1rem}.tb button{padding:6px 10px;font-size:.78rem}}
+</style>
+</head>
+<body>
+<header>
+<h1>⚙️ AI TOML Editor</h1>
+<div class="tb">
+<button onclick="validate()">✓ Validate</button>
+<button onclick="toml2json()">TOML → JSON</button>
+<button onclick="json2toml()">JSON → TOML</button>
+<button onclick="toggleTree()">🌳 Tree</button>
+<button onclick="clearAll()">✕ Clear</button>
+</div>
+</header>
+<main>
+<div class="pn">
+<div class="ph">TOML Input <span class="badge" id="lbadge">0 lines</span></div>
+<textarea id="inp" spellcheck="false" placeholder="# Enter your TOML here...
+[server]
+host = &quot;localhost&quot;
+port = 8080
+enabled = true
+
+[database]
+name = &quot;mydb&quot;
+ports = [5432, 5433]"></textarea>
+</div>
+<div class="dv" id="divider"></div>
+<div class="pn">
+<div class="ph">Output <span class="badge" id="obadge">JSON</span></div>
+<div id="outwrap"><textarea id="out" spellcheck="false" placeholder="Output will appear here..."></textarea></div>
+<div id="tree"></div>
+</div>
+</main>
+<div class="sb">
+<span><span class="sd id" id="sdot"></span> <span id="smsg">Ready</span></span>
+<span>AI TOML Editor v1.0</span>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const inp=document.getElementById('inp'),out=document.getElementById('out'),tree=document.getElementById('tree'),sdot=document.getElementById('sdot'),smsg=document.getElementById('smsg'),lbadge=document.getElementById('lbadge'),obadge=document.getElementById('obadge'),toastEl=document.getElementById('toast');
+
+inp.addEventListener('input',()=>{const n=inp.value.split('\n').length;lbadge.textContent=n+' lines';});
+
+function toast(msg,type){toastEl.textContent=msg;toastEl.className='toast show '+(type||'');setTimeout(()=>toastEl.className='toast',2500);}
+function setStatus(ok,msg){sdot.className='sd '+(ok?'ok':'er');smsg.textContent=msg;}
+
+// Simple TOML parser
+function parseTOML(s){
+  const r={};let cur=r,path=[];const lines=s.split('\n');
+  for(let i=0;i<lines.length;i++){
+    let ln=lines[i].replace(/#.*$/,'').trim();
+    if(!ln)continue;
+    // Array of tables [[...]]
+    let m=ln.match(/^\[\[([^\]]+)\]\]$/);
+    if(m){
+      const keys=m[1].split('.').map(k=>k.trim().replace(/^["']|["']$/g,''));
+      cur=r;
+      for(let j=0;j<keys.length;j++){
+        const k=keys[j];
+        if(j===keys.length-1){
+          if(!Array.isArray(cur[k]))cur[k]=[];
+          const obj={};cur[k].push(obj);cur=obj;
+        }else{
+          if(cur[k]===undefined)cur[k]={};
+          if(Array.isArray(cur[k]))cur=cur[k][cur[k].length-1];
+          else cur=cur[k];
+        }
+      }
+      continue;
+    }
+    // Table [...]
+    m=ln.match(/^\[([^\]]+)\]$/);
+    if(m){
+      const keys=m[1].split('.').map(k=>k.trim().replace(/^["']|["']$/g,''));
+      cur=r;
+      for(const k of keys){if(cur[k]===undefined)cur[k]={};if(Array.isArray(cur[k]))cur=cur[k][cur[k].length-1];else cur=cur[k];}
+      continue;
+    }
+    // Key = Value
+    const eq=ln.indexOf('=');
+    if(eq===-1)throw new Error('Line '+(i+1)+': Expected key=value, got: '+ln);
+    const key=ln.slice(0,eq).trim().replace(/^["']|["']$/g,'');
+    const val=ln.slice(eq+1).trim();
+    cur[key]=parseValue(val,i+1);
+  }
+  return r;
+}
+
+function parseValue(v,line){
+  if(v===''||v===undefined)throw new Error('Line '+line+': Empty value');
+  // Multi-line strings not supported in simple parser, handle basic types
+  // Boolean
+  if(v==='true')return true;
+  if(v==='false')return false;
+  // String (basic & literal)
+  if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'"))){
+    return v.slice(1,-1).replace(/\\n/g,'\n').replace(/\\t/g,'\t').replace(/\\\\/g,'\\').replace(/\\"/g,'"');
+  }
+  // Array
+  if(v.startsWith('[')){
+    const inner=v.slice(1,-1).trim();
+    if(!inner)return[];
+    return splitArray(inner).map(x=>parseValue(x.trim(),line));
+  }
+  // Integer / Float
+  if(/^[+-]?\d[\d_]*$/.test(v))return parseInt(v.replace(/_/g,''),10);
+  if(/^[+-]?\d[\d_]*\.[\d_]*([eE][+-]?\d+)?$/.test(v))return parseFloat(v.replace(/_/g,''));
+  if(/^0x[\da-fA-F_]+$/.test(v))return parseInt(v.replace(/_/g,''),16);
+  if(/^0o[0-7_]+$/.test(v))return parseInt(v.replace(/_/g,'').replace('0o',''),8);
+  if(/^0b[01_]+$/.test(v))return parseInt(v.replace(/_/g,'').replace('0b',''),2);
+  // Datetime (return as string)
+  if(/^\d{4}-\d{2}-\d{2}/.test(v))return v;
+  // inf/nan
+  if(v==='inf'||v==='+inf')return Infinity;
+  if(v==='-inf')return-Infinity;
+  if(v==='nan'||v==='+nan'||v==='-nan')return NaN;
+  throw new Error('Line '+line+': Cannot parse value: '+v);
+}
+
+function splitArray(s){
+  const r=[];let d=0,cur='',inStr=false,q='';
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(inStr){cur+=c;if(c===q&&s[i-1]!=='\\')inStr=false;continue;}
+    if(c==='"'||c==="'"){inStr=true;q=c;cur+=c;continue;}
+    if(c==='['||c==='{')d++;
+    if(c===']'||c==='}')d--;
+    if(c===','&&d===0){r.push(cur);cur='';continue;}
+    cur+=c;
+  }
+  if(cur.trim())r.push(cur);
+  return r;
+}
+
+// JSON to TOML converter
+function jsonToTomlStr(obj,prefix){
+  prefix=prefix||'';
+  let simple='',nested='';
+  for(const[k,v]of Object.entries(obj)){
+    const key=needsQuote(k)?'"'+k+'"':k;
+    const fullKey=prefix?prefix+'.'+key:key;
+    if(v===null||v===undefined){simple+=key+' = ""\n';}
+    else if(Array.isArray(v)){
+      if(v.length>0&&typeof v[0]==='object'&&!Array.isArray(v[0])){
+        for(const item of v){nested+='\n[['+fullKey+']]\n'+jsonToTomlStr(item,'');}
+      }else{simple+=key+' = '+toTomlValue(v)+'\n';}
+    }
+    else if(typeof v==='object'){nested+='\n['+fullKey+']\n'+jsonToTomlStr(v,fullKey.split('.').length>1?'':fullKey).replace(/\n\[/g,'\n[');}
+    else{simple+=key+' = '+toTomlValue(v)+'\n';}
+  }
+  // Fix nested: remove prefix from nested section keys
+  return simple+nested;
+}
+
+function toTomlValue(v){
+  if(typeof v==='string')return'"'+v.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n')+'"';
+  if(typeof v==='number'||typeof v==='boolean')return String(v);
+  if(Array.isArray(v))return'['+v.map(toTomlValue).join(', ')+']';
+  if(typeof v==='object'&&v!==null)return'{'+Object.entries(v).map(([k,val])=>(needsQuote(k)?'"'+k+'"':k)+' = '+toTomlValue(val)).join(', ')+'}';
+  return'""';
+}
+
+function needsQuote(k){return/[^a-zA-Z0-9_-]/.test(k);}
+
+// Tree view
+function buildTree(obj,label){
+  let html='';
+  if(typeof obj==='object'&&obj!==null&&!Array.isArray(obj)){
+    const keys=Object.keys(obj);
+    const id='t'+Math.random().toString(36).slice(2,8);
+    html+='<div class="tt" onclick="tog(\''+id+'\',this)"><span class="ta" id="a_'+id+'">▼</span> '+(label?'<span class="tk">'+esc(label)+'</span>: ':'')+' <span class="tbr">{'+keys.length+'}</span></div>';
+    html+='<div class="tc" id="'+id+'">';
+    for(const k of keys)html+=buildTree(obj[k],k);
+    html+='</div>';
+  }else if(Array.isArray(obj)){
+    const id='t'+Math.random().toString(36).slice(2,8);
+    html+='<div class="tt" onclick="tog(\''+id+'\',this)"><span class="ta" id="a_'+id+'">▼</span> '+(label?'<span class="tk">'+esc(label)+'</span>: ':'')+' <span class="tbr">['+obj.length+']</span></div>';
+    html+='<div class="tc" id="'+id+'">';
+    for(let i=0;i<obj.length;i++)html+=buildTree(obj[i],String(i));
+    html+='</div>';
+  }else{
+    const cls=typeof obj==='string'?'ts':typeof obj==='number'?'tn':typeof obj==='boolean'?'tb2':'tbr';
+    const val=typeof obj==='string'?'"'+esc(obj)+'"':String(obj);
+    html+='<div style="padding:2px 0">'+(label?'<span class="tk">'+esc(label)+'</span>: ':'')+'<span class="'+cls+'">'+val+'</span></div>';
+  }
+  return html;
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function tog(id){const el=document.getElementById(id),ar=document.getElementById('a_'+id);if(el.classList.contains('h')){el.classList.remove('h');ar.classList.remove('c');ar.textContent='▼';}else{el.classList.add('h');ar.classList.add('c');ar.textContent='▼';}}
+
+let treeMode=false;
+function toggleTree(){
+  treeMode=!treeMode;
+  if(treeMode){showTree();}
+  else{tree.style.display='none';document.getElementById('outwrap').style.display='flex';obadge.textContent='JSON';}
+}
+
+function showTree(){
+  try{
+    const src=inp.value.trim();if(!src){toast('Enter TOML first','error');return;}
+    const obj=parseTOML(src);
+    tree.innerHTML=buildTree(obj,'');
+    tree.style.display='block';document.getElementById('outwrap').style.display='none';
+    obadge.textContent='TREE';treeMode=true;
+    setStatus(true,'Tree view generated');toast('Tree view ready','success');
+  }catch(e){toast('Parse error: '+e.message,'error');setStatus(false,e.message);}
+}
+
+function validate(){
+  try{
+    const src=inp.value.trim();if(!src){toast('Enter TOML first','error');return;}
+    parseTOML(src);setStatus(true,'Valid TOML');toast('Valid TOML ✓','success');
+  }catch(e){setStatus(false,e.message);toast('Error: '+e.message,'error');}
+}
+
+function toml2json(){
+  try{
+    const src=inp.value.trim();if(!src){toast('Enter TOML first','error');return;}
+    const obj=parseTOML(src);
+    out.value=JSON.stringify(obj,null,2);
+    if(treeMode){treeMode=false;tree.style.display='none';document.getElementById('outwrap').style.display='flex';}
+    obadge.textContent='JSON';setStatus(true,'Converted to JSON');toast('TOML → JSON ✓','success');
+  }catch(e){setStatus(false,e.message);toast('Error: '+e.message,'error');}
+}
+
+function json2toml(){
+  try{
+    const src=out.value.trim()||inp.value.trim();if(!src){toast('Enter JSON in output panel','error');return;}
+    const obj=JSON.parse(src);
+    const toml=jsonToTomlStr(obj,'');
+    inp.value=toml.trim();
+    if(treeMode){treeMode=false;tree.style.display='none';document.getElementById('outwrap').style.display='flex';}
+    obadge.textContent='JSON';setStatus(true,'Converted to TOML');toast('JSON → TOML ✓','success');
+  }catch(e){setStatus(false,e.message);toast('Error: '+e.message,'error');}
+}
+
+function clearAll(){inp.value='';out.value='';tree.innerHTML='';tree.style.display='none';document.getElementById('outwrap').style.display='flex';treeMode=false;obadge.textContent='JSON';setStatus(true,'Cleared');lbadge.textContent='0 lines';toast('Cleared','success');}
+
+// Resizable divider
+const dv=document.getElementById('divider');let dragging=false;
+dv.addEventListener('mousedown',()=>dragging=true);
+document.addEventListener('mousemove',e=>{if(!dragging)return;const pns=document.querySelectorAll('.pn');const rect=document.querySelector('main').getBoundingClientRect();const pct=((e.clientX-rect.left)/rect.width)*100;pns[0].style.flex='none';pns[0].style.width=Math.max(20,Math.min(80,pct))+'%';pns[1].style.flex='1';});
+document.addEventListener('mouseup',()=>dragging=false);
+
+// Tab key support in textarea
+inp.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const s=inp.selectionStart,en=inp.selectionEnd;inp.value=inp.value.substring(0,s)+'  '+inp.value.substring(en);inp.selectionStart=inp.selectionEnd=s+2;}});
+</script>
+<script src="https://alwingulla.com/88/tag.min.js" data-zone="130647" async data-cfasync="false"></script>
+</body>
+</html>
