@@ -387,6 +387,86 @@ input.addEventListener('keydown', function(e) {
 // Load example on start
 window.loadExample();
 </script>
+<!-- Pro Features Section -->
+<style>
+.pro-section{position:relative;max-width:1200px;margin:0 auto;cursor:pointer;border-radius:0 0 12px 12px;overflow:hidden;border:1px solid var(--border);border-top:none}
+.pro-blur{filter:blur(4px);opacity:.7;padding:24px;background:var(--bg2);pointer-events:none;user-select:none}
+.pro-blur h3{color:var(--accent);font-size:1rem;margin-bottom:12px}
+.pro-blur .mock-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.pro-blur .mock-tab{padding:6px 14px;background:var(--bg3);border-radius:6px;font-size:.8rem;color:var(--text2)}
+.pro-blur .mock-tab.active{background:var(--accent);color:#fff}
+.pro-blur .mock-validation{background:var(--bg);border-radius:8px;padding:12px;margin-bottom:12px}
+.pro-blur .mock-vrow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.8rem;color:var(--text2)}
+.pro-blur .mock-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pro-blur .mock-dot.ok{background:var(--green)}.pro-blur .mock-dot.err{background:var(--red)}
+.pro-blur .mock-export{display:flex;gap:8px;flex-wrap:wrap}
+.pro-blur .mock-ebtn{padding:8px 16px;background:var(--bg3);border-radius:6px;font-size:.8rem;color:var(--text2)}
+.pro-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:2;transition:background .2s}
+.pro-overlay:hover{background:rgba(0,0,0,.55)}
+.pro-lock{font-size:2.5rem;margin-bottom:8px}
+.pro-label{color:#fff;font-size:1.15rem;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.pro-sublabel{color:rgba(255,255,255,.7);font-size:.85rem;margin-top:4px}
+.pro-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px}
+.pro-modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center;animation:proFadeIn .3s}
+@keyframes proFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.pro-modal-box h3{font-size:1.3rem;color:#fff;margin-bottom:4px}
+.pro-modal-box .pro-price{font-size:2rem;font-weight:800;color:var(--accent);margin:12px 0}
+.pro-modal-box .pro-desc{color:var(--text2);font-size:.85rem;margin-bottom:8px}
+.pro-modal-box ul{text-align:left;list-style:none;margin:16px 0;padding:0}
+.pro-modal-box ul li{padding:8px 0;border-bottom:1px solid var(--border);font-size:.9rem;color:#ccc}
+.pro-modal-box ul li:last-child{border-bottom:none}
+.pro-modal-box ul li::before{content:'✓ ';color:var(--accent);font-weight:700}
+.pro-btn{display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;text-decoration:none;border-radius:10px;font-size:1.05rem;font-weight:700;margin-top:16px;transition:opacity .2s;text-align:center}
+.pro-btn:hover{opacity:.9}
+.pro-close{background:none;border:none;color:#888;font-size:.9rem;margin-top:12px;cursor:pointer;padding:8px}
+.pro-close:hover{color:#fff}
+</style>
+<div class="pro-section" onclick="document.getElementById('proModal').style.display='flex'">
+<div class="pro-blur">
+<h3>🛡️ Schema Validation</h3>
+<div class="mock-validation">
+<div class="mock-vrow"><span class="mock-dot ok"></span> [server] — All fields valid</div>
+<div class="mock-vrow"><span class="mock-dot ok"></span> [database] — Types match schema</div>
+<div class="mock-vrow"><span class="mock-dot err"></span> [logging.level] — Expected enum: debug|info|warn|error</div>
+<div class="mock-vrow"><span class="mock-dot ok"></span> [products] — Array structure valid</div>
+</div>
+<h3>📁 Multi-file Management</h3>
+<div class="mock-row">
+<span class="mock-tab active">config.toml</span>
+<span class="mock-tab">production.toml</span>
+<span class="mock-tab">staging.toml</span>
+<span class="mock-tab">+ New File</span>
+</div>
+<h3>📤 Export Configurations</h3>
+<div class="mock-export">
+<span class="mock-ebtn">→ YAML</span>
+<span class="mock-ebtn">→ ENV</span>
+<span class="mock-ebtn">→ INI</span>
+<span class="mock-ebtn">→ XML</span>
+<span class="mock-ebtn">→ HCL</span>
+</div>
+</div>
+<div class="pro-overlay">
+<div class="pro-lock">🔒</div>
+<div class="pro-label">Pro Features</div>
+<div class="pro-sublabel">Click to unlock schema validation, multi-file & export</div>
+</div>
+</div>
+<div id="proModal" class="pro-modal" onclick="if(event.target===this)this.style.display='none'">
+<div class="pro-modal-box">
+<h3>⚡ TOML Editor Pro</h3>
+<div class="pro-desc">Professional TOML editing with advanced features</div>
+<div class="pro-price">$9</div>
+<ul>
+<li>Schema Validation — validate TOML against custom schemas in real-time</li>
+<li>Multi-file Management — edit and compare multiple TOML files side by side</li>
+<li>Export Configurations — convert TOML to YAML, ENV, INI, XML & more</li>
+<li>Priority support & lifetime updates</li>
+</ul>
+<a href="https://feifeicch.gumroad.com/l/ai-toml-editor-pro" target="_blank" class="pro-btn">Upgrade to Pro — $9</a>
+<button class="pro-close" onclick="event.stopPropagation();document.getElementById('proModal').style.display='none'">Maybe later</button>
+</div>
+</div>
 <script src="https://alwingulla.com/88/tag.min.js" data-zone="130747" async data-cfasync="false"></script>
 </body>
 </html>
